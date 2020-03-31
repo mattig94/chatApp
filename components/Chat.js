@@ -4,9 +4,9 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 //use to fix base64 error
-import {decode, encode} from 'base-64'
-if (!global.btoa) {  global.btoa = encode }
-if (!global.atob) { global.atob = decode }
+// import {decode, encode} from 'base-64'
+// if (!global.btoa) {  global.btoa = encode }
+// if (!global.atob) { global.atob = decode }
 
 //import firestore
 const firebase = require('firebase');
@@ -14,6 +14,7 @@ require('firebase/firestore');
 
 //main chat view
 export default class Chat extends Component {
+
   constructor() {
     super()
     //connect to firestore
@@ -32,7 +33,7 @@ export default class Chat extends Component {
     //refernce collection
     this.referenceMessages = firebase.firestore().collection('messages');
     //get and store messages for chat
-    state = {
+    this.state = {
       messages: [],
     }
   }
@@ -47,7 +48,7 @@ export default class Chat extends Component {
   componentDidMount() {
     this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
-        await firebase.auth().signInAnonymously();
+        user = await firebase.auth().signInAnonymously();
       }
       this.setState({
         uid: user.uid,
@@ -87,7 +88,7 @@ export default class Chat extends Component {
       var data = doc.data();
       messages.push({
         _id: data._id,
-        createdAt: data.createdAt,
+        createdAt: data.createdAt.toDate(),
         text: data.text,
         user: {
           _id: data.user._id,
@@ -118,12 +119,11 @@ export default class Chat extends Component {
       () => {
         this.addMessage();
       })
-  }
+  };
 
   render() {
     return (
-      <View style={[styles.container, {backgroundColor: this.props.navigation.state.params.color}]}>
-        <Text style={{color: '#FFFFFF'}}>Chat</Text>
+      <View style={[styles.container, {backgroundColor: this.props.navigation.state.params.roomColor}]}>
         <GiftedChat
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}

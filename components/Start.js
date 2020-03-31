@@ -7,7 +7,7 @@ export default class Start extends Component {
     super(props);
     this.state = { 
       name: '',
-      color: '' 
+      roomColor: '' 
     };
   }
 
@@ -29,25 +29,25 @@ export default class Start extends Component {
               <View style={styles.colorChoice}>
                 <TouchableOpacity
                 style={[styles.roundButton, {backgroundColor: '#090C08'}]}
-                onPress={() => this.setState({color: '#090C08'})}
+                onPress={() => this.setState({roomColor: '#090C08'})}
                 />
                 <TouchableOpacity
                 style={[styles.roundButton, {backgroundColor: '#474056'}]}
-                onPress={() => this.setState({color: '#474056'})}
+                onPress={() => this.setState({roomColor: '#474056'})}
                 />
                 <TouchableOpacity
                 style={[styles.roundButton, {backgroundColor: '#8A95A5'}]}
-                onPress={() => this.setState({color: '#8A95A5'})}
+                onPress={() => this.setState({roomColor: '#8A95A5'})}
                 />
                 <TouchableOpacity
                 style={[styles.roundButton, {backgroundColor: '#B9C6AE'}]}
-                onPress={() => this.setState({color: '#B9C6AE'})}
+                onPress={() => this.setState({roomColor: '#B9C6AE'})}
                 />
               </View>
             </View>
             <TouchableOpacity
               style={styles.chatButton}
-              onPress={() => this.props.navigation.navigate('Chat', {name: this.state.name, color: this.state.color})}
+              onPress={() => this.props.navigation.navigate('Chat', {name: this.state.name, roomColor: this.state.roomColor})}
             >
               <Text style={[styles.basicText, styles.buttonText]}>Start Chatting</Text>
             </TouchableOpacity>
