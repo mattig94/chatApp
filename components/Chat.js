@@ -3,11 +3,6 @@ import { StyleSheet, Text, View, Platform } from 'react-native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 
-//use to fix base64 error
-// import {decode, encode} from 'base-64'
-// if (!global.btoa) {  global.btoa = encode }
-// if (!global.atob) { global.atob = decode }
-
 //import firestore
 const firebase = require('firebase');
 require('firebase/firestore');
