@@ -4,6 +4,8 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 //import firestore
+// import * as firebase from 'firebase';
+// import '@firebase/firestore';
 const firebase = require('firebase');
 require('firebase/firestore');
 
