@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Platform } from 'react-native';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { StyleSheet, Text, View, Platform, AsyncStorage } from 'react-native';
+//NetInfo was separated from react-native
+import NetInfo from "@react-native-community/netinfo";
+import { GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 
-//import firestore
-// import * as firebase from 'firebase';
-// import '@firebase/firestore';
+//import firebase/firestore
 const firebase = require('firebase');
 require('firebase/firestore');
 
@@ -32,6 +32,7 @@ export default class Chat extends Component {
     //get and store messages for chat
     this.state = {
       messages: [],
+      isConnected: false,
     }
   }
 
@@ -41,43 +42,6 @@ export default class Chat extends Component {
       title: navigation.state.params.name
     };
   };
-
-  componentDidMount() {
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
-      if (!user) {
-        user = await firebase.auth().signInAnonymously();
-      }
-      this.setState({
-        uid: user.uid,
-        loggedInText: 'Hello there',
-      });
-      this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
-    });
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: 'Hello Developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-          },
-        },
-        {
-          _id: 2,
-          text: this.props.navigation.state.params.name + ' entered the chat',
-          createdAt: new Date(),
-          system: true,
-        }
-      ],
-    })
-  }
-
-  componentWillUnmount() {
-    this.authUnsubscribe();
-  }
 
   onCollectionUpdate = (querySnapshot) => {
     const messages = [];
@@ -104,8 +68,11 @@ export default class Chat extends Component {
       _id: this.state.messages[0]._id,
       text: this.state.messages[0].text,
       createdAt: this.state.messages[0].createdAt,
-      user: this.state.messages[0].user,
-      uid: this.state.uid,
+      user: {
+        _id: this.state.uid,
+        name: this.props.navigation.state.params.name,
+        avatar: 'https://placeimg.com/140/140/any'
+      },
     });
   };
 
@@ -115,8 +82,80 @@ export default class Chat extends Component {
     }),
       () => {
         this.addMessage();
+        this.saveMessages();
       })
   };
+
+  //async functions for getting messages even when offline
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = await AsyncStorage.getItem('messages') || [];
+      this.setState({
+        messages: JSON.parse(messages)
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  async saveMessages() {
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem('messages');
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+
+  componentDidMount() {
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if (isConnected == true) {
+        console.log('online');
+        this.setState({
+          isConnected: true,
+        });
+        this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+          if (!user) {
+            await firebase.auth().signInAnonymously();
+          }
+          this.setState({
+            uid: user.uid,
+            loggedInText: 'Hello there',
+          });
+          this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
+        });
+      } else {
+        console.log('offline');
+        this.setState({
+          isConnected: false,
+        });
+        this.getMessages();
+      }
+    });  
+  }
+
+  componentWillUnmount() {
+    this.authUnsubscribe();
+  }
+
+  //No input bar when offline
+  renderInputToolbar(props) {
+    if (this.state.isConnected == false) {
+    } else {
+      return(
+        <InputToolbar {...props}/>
+      );
+    }
+  }
 
   render() {
     return (
