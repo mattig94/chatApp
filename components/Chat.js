@@ -4,6 +4,8 @@ import { StyleSheet, Text, View, Platform, AsyncStorage } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
 import { GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 
 //import firebase/firestore
 const firebase = require('firebase');
@@ -56,6 +58,8 @@ export default class Chat extends Component {
           name: data.user.name,
           avatar: data.user.avatar,
         },
+        image: data.image,
+        location: data.location,
       });
     });
     this.setState({
@@ -73,6 +77,8 @@ export default class Chat extends Component {
         name: this.props.navigation.state.params.name,
         avatar: 'https://placeimg.com/140/140/any'
       },
+      image: this.state.messages[0].image,
+      location: this.state.messages[0].location,
     });
   };
 
@@ -157,6 +163,33 @@ export default class Chat extends Component {
     }
   }
 
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
+  renderCustomView (props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{
+            width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3
+          }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  }
+
   render() {
     return (
       <View style={[styles.container, {backgroundColor: this.props.navigation.state.params.roomColor}]}>
@@ -166,6 +199,8 @@ export default class Chat extends Component {
           user={{
             _id: 1,
           }}
+          renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
         />
         {Platform.OS === 'android' ? <KeyboardSpacer/> : null }
       </View>
