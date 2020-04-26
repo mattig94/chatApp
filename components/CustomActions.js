@@ -19,8 +19,8 @@ export default class CustomActions extends Component {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
       }).catch(error => console.log(error));
       if (!result.cancelled) {
-        const imageUrl = await this.uploadImage(result.uri);
-        this.props.onSend({ image: imageUrl })
+        const imgURL = await this.uploadImage(result.uri);
+        this.props.onSend({ image: imgURL })
       }
     }
   }
@@ -32,8 +32,8 @@ export default class CustomActions extends Component {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
       }).catch(error => console.log(error));
       if (!result.cancelled) {
-        const imageUrl = await this.uploadImage(result.uri);
-        this.props.onSend({ image: imageUrl })
+        const imgURL = await this.uploadImage(result.uri);
+        this.props.onSend({ image: imgURL })
       }
     }
   }
@@ -55,7 +55,8 @@ export default class CustomActions extends Component {
     const ref = firebase.storage().ref().child('sentImage');
     const snapshot = await ref.put(blob);
     blob.close();
-    return await snapshot.ref.getDownloadURL();
+    const imgURL = await snapshot.ref.getDownloadURL();
+    return imgURL;
   }
 
   getLocation = async () => {
@@ -75,7 +76,6 @@ export default class CustomActions extends Component {
     }
   }
 
-  //logs to check ActionSheet works
   onActionPress = () => {
     const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
     const cancelButtonIndex = options.length - 1;
@@ -88,12 +88,13 @@ export default class CustomActions extends Component {
         switch (buttonIndex) {
           case 0: 
             console.log('User wants to pick an image');
-            return;
+            return this.pickImage();
           case 1:
             console.log('User wants to take a photo');
-            return;
+            return this.takePhoto();
           case 2:
             console.log('User wants to get their location');
+            return this.getLocation();
           default:
         }
       },
