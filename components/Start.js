@@ -11,6 +11,9 @@ export default class Start extends Component {
     };
   }
 
+  //TextInput sets user name
+  //TouchableOpacity sets background color for chat
+
   render() {
     return (
       <ImageBackground source={require('../assets/background.png')} style={styles.homeBackground}>
@@ -58,6 +61,11 @@ export default class Start extends Component {
   }
 }
 
+/**
+ * styles
+ * @constant
+ * @type {object}
+ */
 const styles = StyleSheet.create({ 
   basicText: {
     fontSize: 16,
