@@ -135,7 +135,7 @@ export default class Chat extends Component {
           }
           this.setState({
             uid: user.uid,
-            loggedInText: 'Hello there',
+            loggedInText: 'Hello there ${user.name}',
           });
           this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
         });
