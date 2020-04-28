@@ -48,7 +48,7 @@ export default class Chat extends Component {
   onCollectionUpdate = (querySnapshot) => {
     const messages = [];
     querySnapshot.forEach((doc) => {
-      var data = doc.data();
+      let data = doc.data();
       messages.push({
         _id: data._id,
         createdAt: data.createdAt.toDate(),

@@ -13,66 +13,82 @@ require('firebase/firestore');
 export default class CustomActions extends Component {
 
   pickImage = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    if(status === 'granted') {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      }).catch(error => console.log(error));
-      if (!result.cancelled) {
-        const imgURL = await this.uploadImage(result.uri);
-        this.props.onSend({ image: imgURL })
+    try {  
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if(status === 'granted') {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        }).catch(error => console.log(error));
+        if (!result.cancelled) {
+          const imgURL = await this.uploadImage(result.uri);
+          this.props.onSend({ image: imgURL })
+        }
       }
+    } catch(error) {
+      console.log(error);
     }
   }
 
   takePhoto = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL, Permissions.CAMERA);
-    if (status === 'granted') {
-      let result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      }).catch(error => console.log(error));
-      if (!result.cancelled) {
-        const imgURL = await this.uploadImage(result.uri);
-        this.props.onSend({ image: imgURL })
+    try {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL, Permissions.CAMERA);
+      if (status === 'granted') {
+        let result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        }).catch(error => console.log(error));
+        if (!result.cancelled) {
+          const imgURL = await this.uploadImage(result.uri);
+          this.props.onSend({ image: imgURL })
+        }
       }
+    } catch(error) {
+      console.log(error);
     }
   }
 
   uploadImage = async(uri) => {
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function(e) {
-        console.log(e);
-        reject(new TypeError('Network request failed'));
-      };
-      xhr.responseType = 'blob';
-      xhr.open('GET', uri, true);
-      xhr.send(null);
-    });
-    const ref = firebase.storage().ref().child('sentImage');
-    const snapshot = await ref.put(blob);
-    blob.close();
-    const imgURL = await snapshot.ref.getDownloadURL();
-    return imgURL;
+    try {
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function(e) {
+          console.log(e);
+          reject(new TypeError('Network request failed'));
+        };
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri, true);
+        xhr.send(null);
+      });
+      const ref = firebase.storage().ref().child('sentImage');
+      const snapshot = await ref.put(blob);
+      blob.close();
+      const imgURL = await snapshot.ref.getDownloadURL();
+      return imgURL;
+    } catch(error) {
+      console.log(error);
+    }
   }
 
   getLocation = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status === 'granted') {
-      let result = await Location.getCurrentPositionAsync({}).catch(error => console.log(error));
-      const longitude = JSON.stringify(result.coords.longitude);
-      const latitude = JSON.stringify(result.coords.latitude);
-      if(result) {
-        this.props.onSend({
-          location: {
-            longitude: result.coords.longitude,
-            latitude: result.coords.latitude,
-          }
-        })
+    try {
+      const { status } = await Permissions.askAsync(Permissions.LOCATION);
+      if (status === 'granted') {
+        let result = await Location.getCurrentPositionAsync({}).catch(error => console.log(error));
+        const longitude = JSON.stringify(result.coords.longitude);
+        const latitude = JSON.stringify(result.coords.latitude);
+        if(result) {
+          this.props.onSend({
+            location: {
+              longitude: result.coords.longitude,
+              latitude: result.coords.latitude,
+            }
+          })
+        }
       }
+    } catch(error) {
+      console.log(error);
     }
   }
 
@@ -85,17 +101,21 @@ export default class CustomActions extends Component {
         cancelButtonIndex,
       },
       async (buttonIndex) => {
-        switch (buttonIndex) {
-          case 0: 
-            console.log('User wants to pick an image');
-            return this.pickImage();
-          case 1:
-            console.log('User wants to take a photo');
-            return this.takePhoto();
-          case 2:
-            console.log('User wants to get their location');
-            return this.getLocation();
-          default:
+        try {
+          switch (buttonIndex) {
+            case 0: 
+              console.log('User wants to pick an image');
+              return this.pickImage();
+            case 1:
+              console.log('User wants to take a photo');
+              return this.takePhoto();
+            case 2:
+              console.log('User wants to get their location');
+              return this.getLocation();
+            default:
+          }
+        } catch(error) {
+          console.log(error);
         }
       },
     );
