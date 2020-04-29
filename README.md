@@ -1,5 +1,5 @@
 # Chat App
-***
+
 Basic messaging application built using React-Native and Firebase/Firestore
 
 ## Setup
@@ -44,3 +44,6 @@ These can be installed from inside the project folder using `npm install`
 ## Running the Application
 Once everything is installed, run `npm start` from inside the project folder. 
 This will start the server locally and the Expo Dev Tools will open in your default web browser. From there you can run the application in the web browser, on your mobile device, or on the emulator (for more info on setting up the emulator to use with Expo look [here](https://docs.expo.io/workflow/android-studio-emulator/))
+
+
+[Kanban Board on Trello](https://trello.com/b/rYtkzSPR)
