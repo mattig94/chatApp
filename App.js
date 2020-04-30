@@ -7,6 +7,9 @@ import { createStackNavigator } from 'react-navigation-stack';
 import Start from './components/Start';
 import Chat from './components/Chat';
 
+//Event listener fix
+window.addEventListener = x => x
+
 //fix for React Native - Firestore: Possible Unhandled Promise Rejection Can't find variable atob error
 import {decode, encode} from 'base-64';
 
