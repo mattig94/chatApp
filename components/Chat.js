@@ -171,7 +171,7 @@ export default class Chat extends Component {
 
 
   componentDidMount() {
-    NetInfo.isConnected.fetch().then(isConnected => {
+    NetInfo.fetch().then(isConnected => {
       if (isConnected == true) {
         console.log('online');
         this.setState({
